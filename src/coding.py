@@ -91,4 +91,9 @@ def verifyUser():
 def user():
     return render_template("User/userHome.html")
 
+
+@app.route("/userRegistration")
+def userRegistration():
+    return render_template("User/userRegistration.html")
+
 app.run(debug = True)
