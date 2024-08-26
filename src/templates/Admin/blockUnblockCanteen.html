@@ -16,18 +16,31 @@
       <td>Phone</td>
       <td>Email</td>
       <td>License</td>
-      <td rowspan="2"><p><a href="#">Block</a></p>
-      <p><a href="#">Unblock</a></p></td>
+      <td>Status</td>
+
     </tr>
+
+
+    {% for i in val %}
+
+
     <tr>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
+      <td>{{i['name']}}</td>
+      <td>{{i['place']}}</td>
+      <td>{{i['post']}}</td>
+      <td>{{i['pin']}}</td>
+      <td>{{i['phone']}}</td>
+      <td>{{i['email']}}</td>
+      <td><a href="../static/uploads/{{i['license']}}">View</a></td>
+       <td rowspan="2"><p>
+         {% if i["type"] == "blocked"%}
+         <a href="unblock_canteen?id={{i['lid']}}">Unblock</a></p>
+         {% else %}
+      <p><a href="block_canteen?id={{i['lid']}}">Block</a></p></td>
+         {% endif %}
     </tr>
+
+     {% endfor %}
   </table>
 </form>
 </body>

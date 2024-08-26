@@ -6,6 +6,10 @@ import os
 
 
 app =Flask(__name__)
+
+
+app.secret_key = "59867876507"
+
 @app.route("/")
 def login():
     return render_template("login.html")
@@ -39,21 +43,84 @@ def admin():
 
 @app.route("/verifyCanteen")
 def verifyCanteen():
-    return render_template("Admin/verifyCanteen.html")
+    qry = 'SELECT * FROM `canteen` JOIN `login` ON `canteen`.lid = `login`.id WHERE `type`="pending"'
+    res = selectall(qry)
+    return render_template("Admin/verifyCanteen.html", val=res)
+
+
+@app.route("/accept_canteen")
+def accept_canteen():
+    id = request.args.get('id')
+    qry = 'UPDATE `login` SET `type`="canteen" WHERE `id`=%s'
+    iud(qry, id)
+    return '''<script>alert("Successfully accepted");window.location="/verifyCanteen"</script>'''
+
+
+@app.route("/reject_canteen")
+def reject_canteen():
+    id = request.args.get('id')
+    qry = 'UPDATE `login` SET `type`="rejected" WHERE `id`=%s'
+    iud(qry, id)
+    return '''<script>alert("rejected");window.location="/verifyCanteen"</script>'''
 
 
 @app.route("/viewComplaint")
 def viewComplaint():
+
     return render_template("Admin/viewComplaint.html")
+
+
+@app.route("/Display_Complaint", methods=['post'])
+def Display_Complaint():
+
+    status = request.form['select']
+
+    if status == "Replied":
+
+        qry = "SELECT `complaint`.*,`user`.name FROM `complaint` JOIN user on `complaint`.user_id = `user`.lid where complaint.reply !='pending' "
+        res = selectall(qry)
+        return render_template("Admin/viewComplaint.html", val=res)
+    else:
+        qry = "SELECT `complaint`.*,`user`.name FROM `complaint` JOIN user on `complaint`.user_id = `user`.lid where complaint.reply ='pending' "
+        res = selectall(qry)
+        return render_template("Admin/viewComplaint.html", val=res, status = status)
 
 
 @app.route("/complaintReply")
 def complaintReply():
+    cid = request.args.get('id')
+    session['cid'] = cid
     return render_template("Admin/complaintReply.html")
+
+
+@app.route("/insert_reply_code", methods=['post'])
+def insert_reply_code():
+    reply = request.form["textfield"]
+    qry = "UPDATE `complaint` SET `reply`=%s WHERE id = %s"
+    iud(qry,(reply, session['cid']))
+    return '''<script>alert("Reply send successfully");window.location="/viewComplaint"</script>'''
+
 
 @app.route("/blockUnblockCanteen")
 def blockUnblockCanteen():
-    return render_template("Admin/blockUnblockCanteen.html")
+    qry = 'SELECT * FROM `canteen` JOIN `login` ON `canteen`.lid = `login`.id WHERE `type`="canteen" or `type`="blocked"'
+    res = selectall(qry)
+    return render_template("Admin/blockUnblockCanteen.html", val=res)
+
+
+@app.route("/block_canteen")
+def block_canteen():
+    id = request.args.get('id')
+    qry = 'UPDATE `login` SET `type`= "blocked" WHERE `id`=%s'
+    iud(qry, id)
+    return '''<script>alert("Blocked");window.location="/blockUnblockCanteen"</script>'''
+
+@app.route("/unblock_canteen")
+def unblock_canteen():
+    id = request.args.get('id')
+    qry = 'UPDATE `login` SET `type`= "canteen" WHERE `id`=%s'
+    iud(qry, id)
+    return '''<script>alert("Unblocked");window.location="/blockUnblockCanteen"</script>'''
 
 
 @app.route("/canteen")

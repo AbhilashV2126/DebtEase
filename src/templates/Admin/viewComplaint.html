@@ -6,20 +6,34 @@
 </head>
 
 <body>
-<form id="form1" name="form1" method="post" action="">
+<form id="form1" name="form1" method="post" action="Display_Complaint">
   <table width="200" border="1">
+    <tr>
+      <td>
+        <select name="select">
+          <option {% if status == "Replied" %} selected {% endif %}>Replied</option>
+          <option {% if status == "Not Replied" %} selected {% endif %}>Not Replied</option>
+        </select>
+      </td>
+       <td colspan="3"><label>
+        <input name="Send" type="submit" id="Send" value="View" />
+      </label></td>
+    </tr>
     <tr>
       <td>Name</td>
       <td>Complaint</td>
       <td>Date</td>
-      <td>&nbsp;</td>
+      <td> Action </td>
     </tr>
+
+    {% for i in val %}
     <tr>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td><a href="#">Reply</a></td>
+      <td>{{i['name']}}</td>
+      <td>{{i['complaint']}}</td>
+      <td>{{i['date']}}</td>
+      <td><a href="/complaintReply?id={{i['id']}}">Reply</a></td>
     </tr>
+    {% endfor %}
   </table>
 </form>
 </body>
