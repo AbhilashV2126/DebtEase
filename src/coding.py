@@ -161,7 +161,26 @@ def canteen_register_code():
 
 @app.route("/verifyUser")
 def verifyUser():
-    return render_template("Canteen/verifyUser.html")
+    qry = 'SELECT * FROM `user` JOIN `login` ON `user`.lid = `login`.id WHERE `type`="pending"'
+    res = selectall(qry)
+    return render_template("Canteen/verifyUser.html", val=res)
+
+
+@app.route("/accept_user")
+def accept_user():
+    id = request.args.get('id')
+    qry = 'UPDATE `login` SET `type`="user" WHERE `id`=%s'
+    iud(qry, id)
+    return '''<script>alert("Successfully accepted");window.location="/verifyUser"</script>'''
+
+
+@app.route("/reject_user")
+def reject_user():
+    id = request.args.get('id')
+    qry = 'UPDATE `login` SET `type`="rejected" WHERE `id`=%s'
+    iud(qry, id)
+    return '''<script>alert("rejected");window.location="/verifyUser"</script>'''
+
 
 
 @app.route("/user")
