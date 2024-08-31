@@ -3,6 +3,7 @@ from src.dbconnection import *
 
 from werkzeug.utils import secure_filename
 import os
+import razorpay
 
 
 app =Flask(__name__)
@@ -27,10 +28,13 @@ def login_code():
     if res is None:
         return '''<script>alert("Invalid username or password");window.location="/"</script>'''
     elif res['type'] == "admin":
+        session['lid'] = res['id']
         return '''<script>alert("Welcome Admin");window.location="/admin"</script>'''
     elif res['type'] == "canteen":
+        session['lid'] = res['id']
         return '''<script>alert("Welcome Canteen");window.location="/canteen"</script>'''
     elif res['type'] == "user":
+        session['lid'] = res['id']
         return '''<script>alert("Welcome User");window.location="/user"</script>'''
     else:
         return '''<script>alert("Invalid username or password");window.location="/"</script>'''
@@ -121,6 +125,27 @@ def unblock_canteen():
     qry = 'UPDATE `login` SET `type`= "canteen" WHERE `id`=%s'
     iud(qry, id)
     return '''<script>alert("Unblocked");window.location="/blockUnblockCanteen"</script>'''
+
+@app.route("/blockUnblockUser")
+def blockUnblockUser():
+    qry = 'SELECT * FROM `user` JOIN `login` ON `user`.lid = `login`.id WHERE `type`="user" or `type`="blocked"'
+    res = selectall(qry)
+    return render_template("Admin/blockUnblockUser.html", val=res)
+
+@app.route("/block_user")
+def block_user():
+    id = request.args.get('id')
+    qry = 'UPDATE `login` SET `type`= "blocked" WHERE `id`=%s'
+    iud(qry, id)
+    return '''<script>alert("Blocked");window.location="/blockUnblockUser"</script>'''
+
+@app.route("/unblock_user")
+def unblock_user():
+    id = request.args.get('id')
+    qry = 'UPDATE `login` SET `type`= "user" WHERE `id`=%s'
+    iud(qry, id)
+    return '''<script>alert("Unblocked");window.location="/blockUnblockUser"</script>'''
+
 
 
 @app.route("/canteen")
@@ -223,6 +248,52 @@ def user_register_code():
 
     iud(qry, val)
     return '''<script>alert("Registration partially completed...wait for verification");window.location="/"</script>'''
+
+
+@app.route("/recharge_wallet")
+def recharge_wallet():
+    return render_template("User/recharge_wallet.html")
+
+
+@app.route("/recharge_wallet_proceed", methods=['post'])
+def recharge_wallet_proceed():
+    amt = request.form['textfield']
+    amount = int(amt)*100
+    session['amt'] = amount
+    session['camt'] = amt
+    return redirect("user_pay_proceed")
+
+
+@app.route('/user_pay_proceed')
+def user_pay_proceed():
+    client = razorpay.Client(auth=("rzp_test_edrzdb8Gbx5U5M", "XgwjnFvJQNG6cS7Q13aHKDJj"))
+    print(client)
+    payment = client.order.create({'amount': session['amt'], 'currency': "INR", 'payment_capture': '1'})
+    return render_template('UserPayProceed.html',p=payment)
+
+
+@app.route("/user_pay_complete", methods=['post'])
+def user_pay_complete():
+
+    qry = " SELECT * FROM `wallet` WHERE lid= %s"
+    res = selectone(qry, session['lid'])
+
+    if res is None:
+
+        qry = "INSERT INTO `wallet` VALUES(NULL,%s,%s)"
+        iud(qry, (session['lid'], session['camt']))
+
+    else:
+
+        qry = "UPDATE `wallet` SET amount = amount+%s WHERE lid=%s"
+        iud(qry, (session['camt'], session['lid']))
+
+    return '''<script>alert("Successfully Recharged");window.location="recharge_wallet"</script>'''
+
+
+@app.route("/view_debt_details")
+def view_debt_details():
+    return render_template("User/view_debt_details.html")
 
 
 app.run(debug = True)
