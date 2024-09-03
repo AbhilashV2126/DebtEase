@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "User/user_index.html" %}
+{% block body %}
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
 <form id="form1" name="form1" method="post" action="recharge_wallet_proceed">
-  <table width="200" border="1">
+  <table width="200" border="1" class="table table-hover table-striped">
     <tr>
       <td width="95"> Amount</td>
       <td width="89"><label>
@@ -15,10 +15,13 @@
     </tr>
     <tr>
       <td colspan="2"><label>
-        <input name="Send" type="submit" id="Send" value="Pay" />
+        <!--<input name="Send" type="submit" id="Send" value="Pay" />-->
+        <input name="Send" type="submit" id="Send" value="Pay" style="background-color: green; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;" />
+
       </label></td>
     </tr>
   </table>
 </form>
 </body>
-</html>
+<!--</html>-->
+{% endblock %}

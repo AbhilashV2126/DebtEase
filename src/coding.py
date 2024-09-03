@@ -13,7 +13,7 @@ app.secret_key = "59867876507"
 
 @app.route("/")
 def login():
-    return render_template("login.html")
+    return render_template("login_index.html")
 
 
 @app.route("/login_code",methods=["post"])
@@ -42,7 +42,7 @@ def login_code():
 
 @app.route("/admin")
 def admin():
-    return render_template("Admin/adminHome.html")
+    return render_template("Admin/admin_index.html")
 
 
 @app.route("/verifyCanteen")
@@ -150,14 +150,15 @@ def unblock_user():
 
 @app.route("/canteen")
 def canteen():
-    return render_template("Canteen/canteenHome.html")
+    return render_template("Canteen/canteen_index.html")
 
 
 @app.route("/registerCanteen")
 def registerCanteen():
     return render_template("Canteen/registerCanteen.html")
 
-@app.route("/canteen_register_code",methods=['post'])
+
+@app.route("/canteen_register_code", methods=['post'])
 def canteen_register_code():
     name = request.form["textfield"]
     place = request.form["textfield2"]
@@ -184,10 +185,59 @@ def canteen_register_code():
 
 
 
+@app.route("/manage_user")
+def manage_user():
+
+    return render_template("Canteen/manage_user.html")
+
+
+@app.route("/search_user", methods=['post'])
+def search_user():
+    name = request.form['textfield']
+    qry = "SELECT * FROM `user` JOIN `login` ON `user`.lid = `login`.id WHERE `type`='user' and user.canteen_id="+str(session['lid'])+" and user.name like '"+name+"%'"
+    res = selectall(qry)
+    return render_template("Canteen/manage_user.html", val=res, uname = name)
+
+
+@app.route("/view_debt")
+def view_debt():
+    id = request.args.get('id')
+    session['uid'] = id
+    qry = "SELECT * FROM `debtdetails` WHERE user_id=%s"
+    res = selectall2(qry, id)
+
+    return render_template("Canteen/view_debt.html", val=res)
+
+
+@app.route("/delete_debt")
+def delete_debt():
+    id = request.args.get('id')
+    qry = "DELETE FROM `debtdetails` WHERE id = %s"
+    iud(qry, id)
+
+    return '''<script>alert("Deleted");window.location="manage_user"</script>'''
+
+
+@app.route("/add_debt", methods=['post'])
+def add_debt():
+    return render_template("Canteen/Add_debt.html")
+
+
+@app.route("/insert_debt", methods=['post'])
+def insert_debt():
+    amount = request.form['textfield']
+    details = request.form['textfield2']
+    qry = "INSERT INTO `debtdetails` VALUES(NULL, %s, %s, %s, CURDATE(), 'pending')"
+    iud(qry, (session['uid'], amount,details))
+
+    return '''<script>alert("Success");window.location="manage_user"</script>'''
+
+
+
 @app.route("/verifyUser")
 def verifyUser():
-    qry = 'SELECT * FROM `user` JOIN `login` ON `user`.lid = `login`.id WHERE `type`="pending"'
-    res = selectall(qry)
+    qry = 'SELECT * FROM `user` JOIN `login` ON `user`.lid = `login`.id WHERE `type`="pending" and user.canteen_id=%s'
+    res = selectall2(qry, session['lid'])
     return render_template("Canteen/verifyUser.html", val=res)
 
 
@@ -210,7 +260,7 @@ def reject_user():
 
 @app.route("/user")
 def user():
-    return render_template("User/userHome.html")
+    return render_template("User/user_index.html")
 
 
 @app.route("/userRegistration")
@@ -267,9 +317,8 @@ def recharge_wallet_proceed():
 @app.route('/user_pay_proceed')
 def user_pay_proceed():
     client = razorpay.Client(auth=("rzp_test_edrzdb8Gbx5U5M", "XgwjnFvJQNG6cS7Q13aHKDJj"))
-    print(client)
     payment = client.order.create({'amount': session['amt'], 'currency': "INR", 'payment_capture': '1'})
-    return render_template('UserPayProceed.html',p=payment)
+    return render_template('UserPayProceed.html', p=payment)
 
 
 @app.route("/user_pay_complete", methods=['post'])
@@ -296,4 +345,17 @@ def view_debt_details():
     return render_template("User/view_debt_details.html")
 
 
-app.run(debug = True)
+@app.route("/balance_view")
+def balance_view():
+    return render_template("User/balance_view.html")
+
+
+@app.route("/balance_code")
+def balance_code():
+    qry ="SELECT * FROM `wallet` WHERE lid=%s"
+    res = selectone(qry,session['lid'])
+    return render_template("User/balance_view.html", val=res)
+
+
+app.run(debug=True)
+

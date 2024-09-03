@@ -1,0 +1,32 @@
+{% extends "Canteen/canteen_index.html" %}
+{% block body %}
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<form id="form1" name="form1" method="post" action="insert_debt">
+  <table width="200" border="1" class="table table-hover table-striped">
+    <tr>
+      <td width="95">Amount</td>
+      <td width="89"><label>
+        <input type="text" name="textfield" />
+      </label></td>
+    </tr>
+     <tr>
+      <td width="95">Details</td>
+      <td width="89"><label>
+        <input type="text" name="textfield2" />
+      </label></td>
+    </tr>
+    <tr>
+      <td colspan="2"><label>
+        <input name="Send" type="submit" id="Send" value="Send" />
+      </label></td>
+    </tr>
+  </table>
+</form>
+</body>
+<!--</html>-->
+{% endblock %}
