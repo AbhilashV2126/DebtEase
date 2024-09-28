@@ -1,8 +1,10 @@
 from flask import*
 from src.dbconnection import *
-
+from flask_mail import *
 from werkzeug.utils import secure_filename
 import os
+import smtplib
+from email.mime.text import MIMEText
 import razorpay
 
 
@@ -10,6 +12,17 @@ app =Flask(__name__)
 
 
 app.secret_key = "59867876507"
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Use the server for your mail service
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'debtease797@gmail.com'  # Your email address
+app.config['MAIL_PASSWORD'] = 'fxmx obzz bvfr niwd'  # Your email password
+app.config['MAIL_DEFAULT_SENDER'] = ('debt management', 'debtease797@gmail.com')
+
+mail = Mail(app)
+
 
 @app.route("/")
 def login():
@@ -227,11 +240,29 @@ def add_debt():
 def insert_debt():
     amount = request.form['textfield']
     details = request.form['textfield2']
-    qry = "INSERT INTO `debtdetails` VALUES(NULL, %s, %s, %s, CURDATE(), 'pending')"
-    iud(qry, (session['uid'], amount,details))
 
-    return '''<script>alert("Success");window.location="manage_user"</script>'''
+    qry = "SELECT * FROM `wallet` WHERE lid=%s"
+    res = selectone(qry, session['uid'])
+    if res is not None:
+        amt = res['amount']
+    else:
+        return '''<script>alert("User Wallet do not have minimum balance");window.location="manage_user"</script>'''
 
+
+    qry = "SELECT * FROM `debtdetails` WHERE `user_id`=%s"
+    res = selectall2(qry, session['uid'])
+    tamt = 0
+    for i in res :
+         tamt = tamt + i['amount']
+
+    if (amt >= 500 and tamt <= 2000):
+          qry = "INSERT INTO `debtdetails` VALUES(NULL, %s, %s, %s, CURDATE(), 'pending')"
+          iud(qry, (session['uid'], amount, details))
+          return '''<script>alert("Success");window.location="manage_user"</script>'''
+    elif(amt <= 500) :
+        return '''<script>alert("User Wallet do not have minimum balance");window.location="manage_user"</script>'''
+    else:
+        return '''<script>alert("Maximum debt limit reached");window.location="manage_user"</script>'''
 
 
 @app.route("/verifyUser")
@@ -239,6 +270,59 @@ def verifyUser():
     qry = 'SELECT * FROM `user` JOIN `login` ON `user`.lid = `login`.id WHERE `type`="pending" and user.canteen_id=%s'
     res = selectall2(qry, session['lid'])
     return render_template("Canteen/verifyUser.html", val=res)
+
+
+@app.route("/send_mail")
+def send_mail():
+    return render_template("Canteen/mail.html")
+
+
+@app.route("/send_mail2", methods=['post'])
+def send_mail2():
+    sub = request.form['textfield']
+
+    qry = 'SELECT `user`.email, SUM(`debtdetails`.`amount`) AS amt FROM `debtdetails` JOIN `user` ON `debtdetails`.`user_id` = `user`.`lid` WHERE `user`.`canteen_id`=%s GROUP BY `user`.email HAVING SUM(`debtdetails`.`amount`) >= 2000 '
+    res = selectall2(qry,session['lid'])
+
+    def mail(s, email):
+        try:
+            # Establish a secure session with Gmail's SMTP server
+            gmail = smtplib.SMTP('smtp.gmail.com', 587)
+            gmail.ehlo()
+            gmail.starttls()
+
+            # Use environment variables or secure methods to handle credentials
+            gmail.login('debtease797@gmail.com', 'fxmx obzz bvfr niwd')
+            print("=====================login done")
+
+            # Prepare the email content
+            msg = MIMEText("Hi, " + str(s))
+            msg['Subject'] = 'Pay Debt'
+            msg['To'] = email
+            msg['From'] = 'debtease797@gmail.com'
+
+            # Send the email
+            gmail.send_message(msg)
+            print("Email sent successfully to", email)
+
+        except Exception as e:
+            print("Couldn't send email:", str(e))
+            return '''<script>alert("Can't send mail"); window.location="/"</script>'''
+
+        finally:
+            gmail.quit()
+
+        return '''<script>alert("Email sent successfully"); window.location="/"</script>'''
+
+    # Assuming `res` is a list of dictionaries with user data
+    if len(res) == 0:
+        return '''<script>alert("No users have debt greater than 2000"); window.location="/"</script>'''
+
+    for i in res:
+        email = i['email']
+        mail(sub, email)
+
+    return '''<script>alert("Done"); window.location="/"</script>'''
 
 
 @app.route("/accept_user")
@@ -355,6 +439,20 @@ def balance_code():
     qry ="SELECT * FROM `wallet` WHERE lid=%s"
     res = selectone(qry,session['lid'])
     return render_template("User/balance_view.html", val=res)
+
+
+@app.route("/addComplaint")
+def addComplaint():
+
+    return render_template("User/addComplaint.html")
+
+@app.route("/add_complaint_code" ,methods=['post'])
+def add_complaint_code():
+    id = session['lid']
+    complaint = request.form['textfield']
+    qry = "INSERT INTO `complaint` VALUES(NULL, %s, %s,  CURDATE(), 'pending')"
+    iud(qry, (id, complaint ))
+    return '''<script>alert("Successfully complaint added");window.location="addComplaint"</script>'''
 
 
 app.run(debug=True)
