@@ -408,6 +408,16 @@ def user_pay_proceed():
 @app.route("/user_pay_complete", methods=['post'])
 def user_pay_complete():
 
+    if session['curpay'] == "paying_debt":
+        qry = "UPDATE `debtdetails` SET STATUS='payed' WHERE `id`=%s"
+        iud(qry, session['payid'])
+        return '''<script>alert("Debt Successfully Payed");window.location="view_debt_details"</script>'''
+
+    elif session['curpay'] == "totalpayment":
+        qry = "UPDATE `debtdetails` SET STATUS='payed' WHERE `user_id`=%s"
+        iud(qry,session['lid'])
+        return '''<script>alert("Debt Successfully Payed");window.location="view_debt_details"</script>'''
+
     qry = " SELECT * FROM `wallet` WHERE lid= %s"
     res = selectone(qry, session['lid'])
 
@@ -427,6 +437,87 @@ def user_pay_complete():
 @app.route("/view_debt_details")
 def view_debt_details():
     return render_template("User/view_debt_details.html")
+
+
+@app.route("/display_debt_details", methods=['post'])
+def display_debt_details():
+    type = request.form['select']
+
+    if type == "UnPayed":
+        qry = "SELECT`debtdetails`.* FROM `debtdetails` WHERE `user_id`=%s AND STATUS='pending'"
+        res = selectall2(qry,session['lid'])
+
+        qry = "SELECT SUM(amount) AS amt FROM `debtdetails` WHERE `user_id`=%s AND STATUS='pending'"
+        res2 = selectall2(qry, session['lid'])
+        print(res)
+        return render_template("User/view_debt_details.html", val=res, type="unpayed", amt=res2 [0]['amt'], status=type)
+    else:
+        qry = "SELECT * FROM `debtdetails` WHERE `user_id`=%s AND STATUS='payed'"
+        res = selectall2(qry, session['lid'])
+        return render_template("User/view_debt_details.html", val=res)
+
+
+@app.route("/pay_debt")
+def pay_debt():
+    id = request.args.get('id')
+    session['payid'] = id
+
+    session['curpay'] = "paying_debt"
+
+    amt = request.args.get('amt')
+    session['actual_amt'] = amt
+
+    amount = int(amt) * 100
+    session['amt'] = amount
+    session['camt'] = amt
+    return render_template("User/user_pay_amount.html")
+
+
+@app.route("/pay_total_amount")
+def pay_total_amount():
+    session['curpay'] = "totalpayment"
+
+    amt = request.args.get('amt')
+
+    session['actual_amt'] = amt
+
+    amount = int(amt) * 100
+    session['amt'] = amount
+    session['camt'] = amt
+    return render_template("User/user_pay_amount.html")
+
+
+@app.route("/pay_from_wallet")
+def pay_from_wallet():
+    qry = "SELECT * FROM `wallet` WHERE lid=%s"
+    res = selectone(qry, session['lid'])
+    return render_template("User/user_pay_through_wallet.html", val=res)
+
+
+@app.route("/pay_wallet_proceed")
+def pay_wallet_proceed():
+
+    balance = request.args.get('balance')
+
+    if session['curpay'] == "paying_debt":
+
+        if int(balance)<int(session['actual_amt']):
+            return '''<script>alert("Not Enough Balance ");window.location="view_debt_details"</script>'''
+        else:
+            qry = "UPDATE `wallet` SET amount=amount-%s WHERE lid=%s"
+            iud(qry, (session['actual_amt'], session['lid']))
+            qry = "UPDATE `debtdetails` SET `status`='payed' where id=%s"
+            iud(qry, session['payid'])
+            return '''<script>alert("Payment Success");window.location="view_debt_details"</script>'''
+    else:
+        if int(balance) < int(session['actual_amt']):
+            return '''<script>alert("Not Enough Balance ");window.location="view_debt_details"</script>'''
+        else:
+            qry = "UPDATE `wallet` SET amount=amount-%s WHERE lid=%s"
+            iud(qry, (session['actual_amt'], session['lid']))
+            qry = "UPDATE `debtdetails` SET `status`='payed' where user_id=%s"
+            iud(qry, session['lid'])
+            return '''<script>alert("Payment Success");window.location="view_debt_details"</script>'''
 
 
 @app.route("/balance_view")

@@ -1,0 +1,24 @@
+{% extends "User/user_index.html"%}
+{% block body %}
+<head>
+    <meta charset="UTF-8">
+    <title>Wallet pay</title>
+</head>
+<body>
+<table border="1" class="table table-hover table-striped">
+    <tr>
+        <th>Wallet Balance</th>
+        <th>{{val['amount']}}</th>
+    </tr>
+    <tr>
+        <th>Paying Amount</th>
+        <th>{{session.actual_amt}}</th>
+    </tr>
+
+    <tr align="center">
+        <th colspan="2"><a href="pay_wallet_proceed?balance={{val['amount']}}" class="btn btn-success">Pay</a> </th>
+    </tr>
+
+</table>
+</body>
+{% endblock%}

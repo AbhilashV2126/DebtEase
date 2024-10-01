@@ -6,8 +6,8 @@
 </head>
 
 <body>
-<form id="form1" name="form1" method="post" action="Display_Complaint">
-  <table width="200" border="1" class="table table-hover table-striped">
+<form id="form1" name="form1" method="post" action="display_debt_details">
+  <table  border="1" class="table table-hover table-striped">
     <tr>
       <td>
         <select name="select">
@@ -15,23 +15,45 @@
           <option {% if status == "UnPayed" %} selected {% endif %}>UnPayed</option>
         </select>
       </td>
-       <td colspan="3"><label>
+       <td><label>
         <input name="Send" type="submit" id="Send" value="View" />
       </label></td>
+
+
+
+      <td>
+         {% if type == "unpayed" %}
+        <b>Total Amount: </b><b class="text text-primary">{{amt}}</b> &nbsp
+    <a href="pay_total_amount?amt={{amt}}" class="btn btn-success">Pay Total</a>
+       {% endif %}</td>
+
+
+
+      <td></td>
+
     </tr>
     <tr>
-      <td>Canteen Name</td>
+      <!--<td>Canteen Name</td>-->
       <td>Amount</td>
       <td>Details</td>
       <td>Date</td>
+      <td></td>
     </tr>
 
     {% for i in val %}
     <tr>
-      <td>{{i['name']}}</td>
+      <!--<td>{{i['name']}}</td>-->
       <td>{{i['amount']}}</td>
       <td>{{i['details']}}</td>
       <td>{{i['date']}}</td>
+      <td>
+
+        {% if i['status'] == "pending" %}
+
+        <a href="pay_debt?id={{i['id']}}&amt={{i['amount']}}" class="text text-success">Pay</a>
+        {% endif %}
+
+      </td>
     </tr>
     {% endfor %}
   </table>
