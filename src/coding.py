@@ -70,6 +70,31 @@ def accept_canteen():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`="canteen" WHERE `id`=%s'
     iud(qry, id)
+
+    qry = "SELECT * FROM  `canteen` WHERE lid=%s"
+    res = selectone(qry, id)
+
+    def mail(email):
+        gmail = smtplib.SMTP('smtp.gmail.com', 587)
+        gmail.ehlo()
+        gmail.starttls()
+
+        # Use environment variables or secure methods to handle credentials
+        gmail.login('debtease797@gmail.com', 'fxmx obzz bvfr niwd')
+        print("=====================login done")
+
+        # Prepare the email content
+        msg = MIMEText("Hi, You have been accepted by admin")
+        msg['Subject'] = 'Debtease'
+        msg['To'] = email
+        msg['From'] = 'debtease797@gmail.com'
+
+        # Send the email
+        gmail.send_message(msg)
+        print("Email sent successfully to", email)
+
+    mail(res['email'])
+
     return '''<script>alert("Successfully accepted");window.location="/verifyCanteen"</script>'''
 
 
@@ -78,6 +103,30 @@ def reject_canteen():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`="rejected" WHERE `id`=%s'
     iud(qry, id)
+    qry = "SELECT * FROM  `canteen` WHERE lid=%s"
+    res = selectone(qry, id)
+
+    def mail(email):
+        gmail = smtplib.SMTP('smtp.gmail.com', 587)
+        gmail.ehlo()
+        gmail.starttls()
+
+        # Use environment variables or secure methods to handle credentials
+        gmail.login('debtease797@gmail.com', 'fxmx obzz bvfr niwd')
+        print("=====================login done")
+
+        # Prepare the email content
+        msg = MIMEText("Hi, You have been rejected by admin")
+        msg['Subject'] = 'Debtease'
+        msg['To'] = email
+        msg['From'] = 'debtease797@gmail.com'
+
+        # Send the email
+        gmail.send_message(msg)
+        print("Email sent successfully to", email)
+
+    mail(res['email'])
+
     return '''<script>alert("rejected");window.location="/verifyCanteen"</script>'''
 
 
@@ -130,6 +179,31 @@ def block_canteen():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`= "blocked" WHERE `id`=%s'
     iud(qry, id)
+
+    qry = "SELECT * FROM  `canteen` WHERE lid=%s"
+    res = selectone(qry, id)
+
+    def mail(email):
+            gmail = smtplib.SMTP('smtp.gmail.com', 587)
+            gmail.ehlo()
+            gmail.starttls()
+
+            # Use environment variables or secure methods to handle credentials
+            gmail.login('debtease797@gmail.com', 'fxmx obzz bvfr niwd')
+            print("=====================login done")
+
+            # Prepare the email content
+            msg = MIMEText("Hi, You have been blocked by admin")
+            msg['Subject'] = 'Debtease'
+            msg['To'] = email
+            msg['From'] = 'debtease797@gmail.com'
+
+            # Send the email
+            gmail.send_message(msg)
+            print("Email sent successfully to", email)
+    mail(res['email'])
+
+
     return '''<script>alert("Blocked");window.location="/blockUnblockCanteen"</script>'''
 
 @app.route("/unblock_canteen")
@@ -137,7 +211,32 @@ def unblock_canteen():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`= "canteen" WHERE `id`=%s'
     iud(qry, id)
-    return '''<script>alert("Unblocked");window.location="/blockUnblockCanteen"</script>'''
+    qry = "SELECT * FROM  `canteen` WHERE lid=%s"
+    res = selectone(qry, id)
+
+    def mail(email):
+        gmail = smtplib.SMTP('smtp.gmail.com', 587)
+        gmail.ehlo()
+        gmail.starttls()
+
+        # Use environment variables or secure methods to handle credentials
+        gmail.login('debtease797@gmail.com', 'fxmx obzz bvfr niwd')
+        print("=====================login done")
+
+        # Prepare the email content
+        msg = MIMEText("Hi, You have been unblocked by admin")
+        msg['Subject'] = 'Debtease'
+        msg['To'] = email
+        msg['From'] = 'debtease797@gmail.com'
+
+        # Send the email
+        gmail.send_message(msg)
+        print("Email sent successfully to", email)
+
+    mail(res['email'])
+
+    return '''<script>alert("Blocked");window.location="/blockUnblockCanteen"</script>'''
+
 
 @app.route("/blockUnblockUser")
 def blockUnblockUser():
@@ -150,6 +249,31 @@ def block_user():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`= "blocked" WHERE `id`=%s'
     iud(qry, id)
+
+    qry = "SELECT * FROM  `user` WHERE lid=%s"
+    res = selectone(qry, id)
+
+    def mail(email):
+        gmail = smtplib.SMTP('smtp.gmail.com', 587)
+        gmail.ehlo()
+        gmail.starttls()
+
+        # Use environment variables or secure methods to handle credentials
+        gmail.login('debtease797@gmail.com', 'fxmx obzz bvfr niwd')
+        print("=====================login done")
+
+        # Prepare the email content
+        msg = MIMEText("Hi, You have been blocked by admin")
+        msg['Subject'] = 'Debtease'
+        msg['To'] = email
+        msg['From'] = 'debtease797@gmail.com'
+
+        # Send the email
+        gmail.send_message(msg)
+        print("Email sent successfully to", email)
+
+    mail(res['email'])
+
     return '''<script>alert("Blocked");window.location="/blockUnblockUser"</script>'''
 
 @app.route("/unblock_user")
@@ -157,6 +281,31 @@ def unblock_user():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`= "user" WHERE `id`=%s'
     iud(qry, id)
+
+    qry = "SELECT * FROM  `user` WHERE lid=%s"
+    res = selectone(qry, id)
+
+    def mail(email):
+        gmail = smtplib.SMTP('smtp.gmail.com', 587)
+        gmail.ehlo()
+        gmail.starttls()
+
+        # Use environment variables or secure methods to handle credentials
+        gmail.login('debtease797@gmail.com', 'fxmx obzz bvfr niwd')
+        print("=====================login done")
+
+        # Prepare the email content
+        msg = MIMEText("Hi, You have been unblocked by admin")
+        msg['Subject'] = 'Debtease'
+        msg['To'] = email
+        msg['From'] = 'debtease797@gmail.com'
+
+        # Send the email
+        gmail.send_message(msg)
+        print("Email sent successfully to", email)
+
+    mail(res['email'])
+
     return '''<script>alert("Unblocked");window.location="/blockUnblockUser"</script>'''
 
 
@@ -249,17 +398,17 @@ def insert_debt():
         return '''<script>alert("User Wallet do not have minimum balance");window.location="manage_user"</script>'''
 
 
-    qry = "SELECT * FROM `debtdetails` WHERE `user_id`=%s"
+    qry = "SELECT * FROM `debtdetails` WHERE `user_id`=%s and status ='pending'"
     res = selectall2(qry, session['uid'])
     tamt = 0
     for i in res :
          tamt = tamt + i['amount']
 
-    if (amt >= 500 and tamt <= 2000):
+    if (amt >= 500 and tamt < 2000 and int(amount)+tamt <= 2000):
           qry = "INSERT INTO `debtdetails` VALUES(NULL, %s, %s, %s, CURDATE(), 'pending')"
           iud(qry, (session['uid'], amount, details))
           return '''<script>alert("Success");window.location="manage_user"</script>'''
-    elif(amt <= 500) :
+    elif(amt < 500) :
         return '''<script>alert("User Wallet do not have minimum balance");window.location="manage_user"</script>'''
     else:
         return '''<script>alert("Maximum debt limit reached");window.location="manage_user"</script>'''
@@ -330,6 +479,31 @@ def accept_user():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`="user" WHERE `id`=%s'
     iud(qry, id)
+
+    qry = "SELECT * FROM  `user` WHERE lid=%s"
+    res = selectone(qry, id)
+
+    def mail(email):
+        gmail = smtplib.SMTP('smtp.gmail.com', 587)
+        gmail.ehlo()
+        gmail.starttls()
+
+        # Use environment variables or secure methods to handle credentials
+        gmail.login('debtease797@gmail.com', 'fxmx obzz bvfr niwd')
+        print("=====================login done")
+
+        # Prepare the email content
+        msg = MIMEText("Hi, You have been accepted by admin")
+        msg['Subject'] = 'Debtease'
+        msg['To'] = email
+        msg['From'] = 'debtease797@gmail.com'
+
+        # Send the email
+        gmail.send_message(msg)
+        print("Email sent successfully to", email)
+
+    mail(res['email'])
+
     return '''<script>alert("Successfully accepted");window.location="/verifyUser"</script>'''
 
 
@@ -338,6 +512,31 @@ def reject_user():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`="rejected" WHERE `id`=%s'
     iud(qry, id)
+
+    qry = "SELECT * FROM  `user` WHERE lid=%s"
+    res = selectone(qry, id)
+
+    def mail(email):
+        gmail = smtplib.SMTP('smtp.gmail.com', 587)
+        gmail.ehlo()
+        gmail.starttls()
+
+        # Use environment variables or secure methods to handle credentials
+        gmail.login('debtease797@gmail.com', 'fxmx obzz bvfr niwd')
+        print("=====================login done")
+
+        # Prepare the email content
+        msg = MIMEText("Hi, You have been rejected by admin")
+        msg['Subject'] = 'Debtease'
+        msg['To'] = email
+        msg['From'] = 'debtease797@gmail.com'
+
+        # Send the email
+        gmail.send_message(msg)
+        print("Email sent successfully to", email)
+
+    mail(res['email'])
+
     return '''<script>alert("rejected");window.location="/verifyUser"</script>'''
 
 
@@ -395,6 +594,7 @@ def recharge_wallet_proceed():
     amount = int(amt)*100
     session['amt'] = amount
     session['camt'] = amt
+    session['curpay'] ="nothing"
     return redirect("user_pay_proceed")
 
 
@@ -544,6 +744,21 @@ def add_complaint_code():
     qry = "INSERT INTO `complaint` VALUES(NULL, %s, %s,  CURDATE(), 'pending')"
     iud(qry, (id, complaint ))
     return '''<script>alert("Successfully complaint added");window.location="addComplaint"</script>'''
+
+@app.route("/viewComplaints")
+def viewComplaints():
+
+    return render_template("User/viewComplaints.html")
+
+@app.route("/Display_Complaints", methods=['post'])
+def Display_Complaints():
+    id = session['lid']
+    qry = "SELECT * FROM  `complaint` WHERE user_id =%s"
+    res= selectall(qry, id)
+    return render_template("User/viewComplaints.html", val=res)
+
+
+
 
 
 app.run(debug=True)

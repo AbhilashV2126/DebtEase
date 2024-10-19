@@ -29,7 +29,7 @@
       <td>{{i['phone']}}</td>
       <td>{{i['email']}}</td>
       <td><a href="../static/uploads/{{i['license']}}">View</a></td>
-       <td rowspan="2"><p>
+       <td rowspan=""><p>
          {% if i["type"] == "blocked"%}
          <a href="unblock_canteen?id={{i['lid']}}">Unblock</a></p>
          {% else %}

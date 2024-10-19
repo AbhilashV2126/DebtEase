@@ -3,9 +3,98 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Untitled Document</title>
+  <style>
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #e0eafc, #cfdef3);
+    margin: 0;
+    padding: 20px;
+}
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+table {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+td:first-child {
+    background-color: #f9f9f9;
+    font-weight: bold;
+    color: #333;
+}
+
+input[type="text"], input[type="file"], select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type="text"]:focus, select:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+input[type="submit"] {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+input[type="submit"]:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+input[type="submit"]:active {
+    transform: translateY(0);
+}
+
+tr:last-child td {
+    border-bottom: none; /* Remove border from last row */
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+@media (max-width: 600px) {
+    table {
+        width: 90%;
+    }
+}
+
+</style>
+
 </head>
 
 <body>
+<h1>Customer Registration</h1>
 <form action="user_register_code" method="post" enctype="multipart/form-data" name="form1" id="form1">
   <table width="200" border="1">
     <tr>
