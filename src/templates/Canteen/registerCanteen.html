@@ -107,27 +107,39 @@ input[type="submit"]:hover {
         <table>
             <tr>
                 <td><label for="name">Name</label></td>
-                <td><input type="text" id="name" name="textfield" required /></td>
+                <td><input type="text" id="name" name="textfield" required
+                    pattern="^[A-Za-z0-9_]+$"
+                    title="Canteenname can only contain letters, numbers, and underscores" /></td>
             </tr>
             <tr>
                 <td><label for="place">Place</label></td>
-                <td><input type="text" id="place" name="textfield2" required /></td>
+                <td><input type="text" id="place" name="textfield2" required
+                    pattern="^[A-Za-z\s]+$"
+                    title="Please enter a valid place name (letters and spaces only)" /></td>
             </tr>
             <tr>
                 <td><label for="post">Post</label></td>
-                <td><input type="text" id="post" name="textfield3" required /></td>
+                <td><input type="text" id="post" name="textfield3" required
+                    pattern="^[A-Za-z\s]+$"
+                    title="Please enter a valid post name (letters and spaces only)" /></td>
             </tr>
             <tr>
                 <td><label for="pin">Pin</label></td>
-                <td><input type="text" id="pin" name="textfield4" required /></td>
+                <td><input type="text" id="pin" name="textfield4" required
+                    pattern="^\d{6}$"
+                    title="Please enter a 6-digit pin code" /></td>
             </tr>
             <tr>
                 <td><label for="phone">Phone</label></td>
-                <td><input type="text" id="phone" name="textfield5" required /></td>
+                <td><input type="text" id="phone" name="textfield5" required
+                    pattern="^\d{10}$"
+                    title="Please enter a 10-digit phone number" /></td>
             </tr>
             <tr>
                 <td><label for="email">Email</label></td>
-                <td><input type="email" id="email" name="textfield6" required /></td>
+                <td><input type="email" id="email" name="textfield6" required
+                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                    title="Please enter a valid email address" /></td>
             </tr>
             <tr>
                 <td><label for="license">License</label></td>
@@ -135,11 +147,15 @@ input[type="submit"]:hover {
             </tr>
             <tr>
                 <td><label for="username">Username</label></td>
-                <td><input type="text" id="username" name="textfield8" required /></td>
+                <td><input type="text" id="username" name="textfield8" required
+                    pattern="^[A-Za-z0-9_]+$"
+                    title="Username can only contain letters, numbers, and underscores" /></td>
             </tr>
             <tr>
                 <td><label for="password">Password</label></td>
-                <td><input type="password" id="password" name="textfield9" required /></td>
+                <td><input type="password" id="password" name="textfield9" required
+                    pattern=".{5,}"
+                    title="Password must be at least 5 characters long" /></td>
             </tr>
             <tr>
                 <td colspan="2">
@@ -150,3 +166,4 @@ input[type="submit"]:hover {
     </form>
 </body>
 </html>
+

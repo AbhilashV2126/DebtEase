@@ -2,66 +2,104 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Untitled Document</title>
+<title>Customer Registration</title>
   <style>
+/* General body styles */
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(to right, #e0eafc, #cfdef3);
+    background-color: #f0f2f5;
+    background-image: url('https://www.thecontractchair.co.uk/media/ck_uploads/from_tiny_editor/canteen-furniture-contract-chair-co-04.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     margin: 0;
-    padding: 20px;
+    padding: 40px;
 }
+
+/* Heading styles */
 h1 {
     text-align: center;
     color: #333;
     margin-bottom: 30px;
 }
 
+/* Form table styles with semi-transparent background */
 table {
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
     border-collapse: collapse;
-    background: white;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
     border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px); /* Blur effect behind the form */
+    padding: 20px; /* Add padding for aesthetics */
 }
 
+/* Table cell styles */
 td {
     padding: 15px;
-    border-bottom: 1px solid #ddd;
+    border: none;
 }
 
-td:first-child {
-    background-color: #f9f9f9;
+/* Label styles */
+label {
     font-weight: bold;
-    color: #333;
+    color: #555;
 }
 
-input[type="text"], input[type="file"], select {
+/* Input field styles */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"],
+select {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
     box-sizing: border-box;
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-input[type="text"]:focus, select:focus {
+/* Input field focus styles */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus {
     border-color: #007BFF;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     outline: none;
 }
 
+/* Select tag styles */
+select {
+    background-color: #fff;
+    appearance: none;
+    padding: 12px;
+    font-size: 14px;
+    color: #333;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+select:focus {
+    border-color: #007BFF;
+}
+
+/* Submit button styles */
 input[type="submit"] {
     background-color: #007BFF;
-    color: white;
+    color: #ffffff;
     border: none;
-    padding: 12px 20px;
-    border-radius: 4px;
+    padding: 12px;
     cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.3s;
+    width: 100%;
     font-size: 16px;
-    transition: background-color 0.3s, transform 0.2s;
+    font-weight: bold;
 }
 
 input[type="submit"]:hover {
@@ -69,20 +107,7 @@ input[type="submit"]:hover {
     transform: translateY(-2px);
 }
 
-input[type="submit"]:active {
-    transform: translateY(0);
-}
-
-tr:last-child td {
-    border-bottom: none; /* Remove border from last row */
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
-    color: #555;
-}
-
+/* Responsive styles */
 @media (max-width: 600px) {
     table {
         width: 90%;
@@ -94,63 +119,58 @@ label {
 </head>
 
 <body>
-<h1>Customer Registration</h1>
 <form action="user_register_code" method="post" enctype="multipart/form-data" name="form1" id="form1">
   <table width="200" border="1">
     <tr>
       <td>Canteen Name </td>
       <td><label for="select"></label>
-
-
-        <select name="select" id="select">
-
+        <select name="select" id="select" required>
+          <option value="" disabled selected>Select a canteen</option> <!-- Default disabled option -->
           {% for i in val %}
-
           <option value="{{i['lid']}}">{{i['name']}}</option>
-
           {% endfor %}
-
         </select>
       </td>
     </tr>
     <tr>
       <td>Name</td>
       <td><label for="textfield"></label>
-      <input type="text" name="textfield" id="textfield" /></td>
+      <input type="text" name="textfield" id="textfield" required pattern="^[A-Za-z\s]+$" title="Please enter a valid name (letters and spaces only)" /></td>
     </tr>
     <tr>
       <td>ID Proof </td>
       <td><label for="file"></label>
-      <input type="file" name="file" id="file" /></td>
+      <input type="file" name="file" id="file" required /></td>
     </tr>
     <tr>
       <td>Email</td>
-      <td><label for="label"></label>
-      <input type="text" name="textfield2" id="label" /></td>
+      <td><label for="textfield2"></label>
+      <input type="email" name="textfield2" id="textfield2" required title="Please enter a valid email address" /></td>
     </tr>
     <tr>
       <td>Phone</td>
-      <td><label for="label2"></label>
-      <input type="text" name="textfield3" id="label2" /></td>
+      <td><label for="textfield3"></label>
+      <input type="text" name="textfield3" id="textfield3" required pattern="^\d{10}$" title="Please enter a 10-digit phone number" /></td>
     </tr>
     <tr>
       <td>Profile Photo</td>
       <td><label for="file2"></label>
-      <input type="file" name="file2" id="file2" /></td>
+      <input type="file" name="file2" id="file2" required /></td>
     </tr>
      <tr>
       <td>Username</td>
-      <td><label for="label3"></label>
-      <input type="text" name="textfield4" id="label3" /></td>
+      <td><label for="textfield4"></label>
+      <input type="text" name="textfield4" id="textfield4" required pattern="^[A-Za-z0-9_]+$" title="Username can contain only letters, numbers, and underscores" /></td>
     </tr>
     <tr>
       <td>Password</td>
-      <td><label for="label4"></label>
-      <input type="text" name="textfield5" id="label4" /></td>
+      <td><label for="textfield5"></label>
+      <input type="password" name="textfield5" id="textfield5" required pattern=".{5,}" title="Password must be at least 5 characters long" /></td>
     </tr>
     <tr>
-      <td colspan="2"><label for="Submit"></label>
-        <input type="submit" name="Register" value="Register" id="Register" /></td>
+      <td colspan="2">
+        <input type="submit" name="Register" value="Register" id="Register" />
+      </td>
     </tr>
   </table>
 </form>
