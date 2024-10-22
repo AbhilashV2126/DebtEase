@@ -9,12 +9,14 @@
 <form id="form1" name="form1" method="post" action="display_debt_details">
   <table  border="1" class="table table-hover table-striped">
     <tr>
+      <th>MAXIMUM DEBT AMOUNT : 2000</th>
+    </tr>
+    <tr>
       <td>
         <select name="select">
           <option {% if status == "Payed" %} selected {% endif %}>Payed</option>
           <option {% if status == "UnPayed" %} selected {% endif %}>UnPayed</option>
         </select>
-      </td>
        <td><label>
         <input name="Send" type="submit" id="Send" value="View" />
       </label></td>

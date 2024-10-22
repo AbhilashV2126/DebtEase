@@ -84,7 +84,8 @@
 
               </ul>
             </li>
-            <li><a href="/">Logout</a></li>
+            <li><a href="/logout">Logout</a></li>
+            <li>Debt : {{session.debt}}</li>
           </ul>
           <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
@@ -107,7 +108,7 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 d-flex flex-column align-items-center align-items-lg-start">
-            <h2 data-aos="fade-up" data-aos-delay="100">Welcome to <span>DebtEase</span></h2>
+            <h2 data-aos="fade-up" data-aos-delay="100">Welcome {{session.name}}, to <span>DebtEase</span></h2>
             <p data-aos="fade-up" data-aos-delay="200">Serving delicious meals with care, where every bite is a promise and every debt is managed with trust.</p>
             <!--<div class="d-flex mt-4" data-aos="fade-up" data-aos-delay="300">-->
               <!--<a href="#menu" class="cta-btn">Our Menu</a>-->

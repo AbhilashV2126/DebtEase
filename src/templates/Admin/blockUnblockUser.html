@@ -27,7 +27,7 @@
      <td><a href="../static/uploads/{{i['id_details']}}">View</a></td>
       <td>{{i['email']}}</td>
       <td>{{i['phone']}}</td>
-      <td><img href="../static/uploads/{{i['profile_photo']}}" alt="{{i['profile_photo']}}" width="250px" height="200"></img></td>
+      <td><img src="../static/uploads/{{i['profile_photo']}}" alt="{{i['profile_photo']}}" width="100px" height="100"></img></td>
        <td rowspan=""><p>
          {% if i["type"] == "blocked"%}
          <a href="unblock_user?id={{i['lid']}}">Unblock</a></p>

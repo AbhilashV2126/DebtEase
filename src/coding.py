@@ -6,6 +6,7 @@ import os
 import smtplib
 from email.mime.text import MIMEText
 import razorpay
+import functools
 
 
 app =Flask(__name__)
@@ -28,6 +29,20 @@ mail = Mail(app)
 def login():
     return render_template("login_index.html")
 
+def login_required(func):
+    @functools.wraps(func)
+    def secure_function():
+        if "lid" not in session:
+            return render_template('login_index.html')
+        return func()
+
+    return secure_function
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
 
 @app.route("/login_code",methods=["post"])
 def login_code():
@@ -48,17 +63,29 @@ def login_code():
         return '''<script>alert("Welcome Canteen");window.location="/canteen"</script>'''
     elif res['type'] == "user":
         session['lid'] = res['id']
+
+        qry = "SELECT * FROM `user` WHERE lid=%s"
+        res2 = selectone(qry, res['id'])
+        session['name'] = res2['name']
+
+        qry = "SELECT SUM(`amount`) AS debt FROM `debtdetails` WHERE user_id=%s"
+        res3 = selectone(qry, res['id'])
+
+        session['debt'] = res3['debt']
+
         return '''<script>alert("Welcome User");window.location="/user"</script>'''
     else:
         return '''<script>alert("Invalid username or password");window.location="/"</script>'''
 
 
 @app.route("/admin")
+@login_required
 def admin():
     return render_template("Admin/admin_index.html")
 
 
 @app.route("/verifyCanteen")
+@login_required
 def verifyCanteen():
     qry = 'SELECT * FROM `canteen` JOIN `login` ON `canteen`.lid = `login`.id WHERE `type`="pending"'
     res = selectall(qry)
@@ -66,6 +93,7 @@ def verifyCanteen():
 
 
 @app.route("/accept_canteen")
+@login_required
 def accept_canteen():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`="canteen" WHERE `id`=%s'
@@ -99,6 +127,7 @@ def accept_canteen():
 
 
 @app.route("/reject_canteen")
+@login_required
 def reject_canteen():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`="rejected" WHERE `id`=%s'
@@ -131,12 +160,14 @@ def reject_canteen():
 
 
 @app.route("/viewComplaint")
+@login_required
 def viewComplaint():
 
     return render_template("Admin/viewComplaint.html")
 
 
 @app.route("/Display_Complaint", methods=['post'])
+@login_required
 def Display_Complaint():
 
     status = request.form['select']
@@ -153,6 +184,7 @@ def Display_Complaint():
 
 
 @app.route("/complaintReply")
+@login_required
 def complaintReply():
     cid = request.args.get('id')
     session['cid'] = cid
@@ -160,6 +192,7 @@ def complaintReply():
 
 
 @app.route("/insert_reply_code", methods=['post'])
+@login_required
 def insert_reply_code():
     reply = request.form["textfield"]
     qry = "UPDATE `complaint` SET `reply`=%s WHERE id = %s"
@@ -168,6 +201,7 @@ def insert_reply_code():
 
 
 @app.route("/blockUnblockCanteen")
+@login_required
 def blockUnblockCanteen():
     qry = 'SELECT * FROM `canteen` JOIN `login` ON `canteen`.lid = `login`.id WHERE `type`="canteen" or `type`="blocked"'
     res = selectall(qry)
@@ -175,6 +209,7 @@ def blockUnblockCanteen():
 
 
 @app.route("/block_canteen")
+@login_required
 def block_canteen():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`= "blocked" WHERE `id`=%s'
@@ -207,6 +242,7 @@ def block_canteen():
     return '''<script>alert("Blocked");window.location="/blockUnblockCanteen"</script>'''
 
 @app.route("/unblock_canteen")
+@login_required
 def unblock_canteen():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`= "canteen" WHERE `id`=%s'
@@ -239,12 +275,14 @@ def unblock_canteen():
 
 
 @app.route("/blockUnblockUser")
+@login_required
 def blockUnblockUser():
     qry = 'SELECT * FROM `user` JOIN `login` ON `user`.lid = `login`.id WHERE `type`="user" or `type`="blocked"'
     res = selectall(qry)
     return render_template("Admin/blockUnblockUser.html", val=res)
 
 @app.route("/block_user")
+@login_required
 def block_user():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`= "blocked" WHERE `id`=%s'
@@ -277,6 +315,7 @@ def block_user():
     return '''<script>alert("Blocked");window.location="/blockUnblockUser"</script>'''
 
 @app.route("/unblock_user")
+@login_required
 def unblock_user():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`= "user" WHERE `id`=%s'
@@ -311,6 +350,7 @@ def unblock_user():
 
 
 @app.route("/canteen")
+@login_required
 def canteen():
     return render_template("Canteen/canteen_index.html")
 
@@ -352,12 +392,14 @@ def canteen_register_code():
 
 
 @app.route("/manage_user")
+@login_required
 def manage_user():
 
     return render_template("Canteen/manage_user.html")
 
 
 @app.route("/search_user", methods=['post'])
+@login_required
 def search_user():
     name = request.form['textfield']
     qry = "SELECT * FROM `user` JOIN `login` ON `user`.lid = `login`.id WHERE `type`='user' and user.canteen_id="+str(session['lid'])+" and user.name like '"+name+"%'"
@@ -366,6 +408,7 @@ def search_user():
 
 
 @app.route("/view_debt")
+@login_required
 def view_debt():
     id = request.args.get('id')
     session['uid'] = id
@@ -376,6 +419,7 @@ def view_debt():
 
 
 @app.route("/delete_debt")
+@login_required
 def delete_debt():
     id = request.args.get('id')
     qry = "DELETE FROM `debtdetails` WHERE id = %s"
@@ -385,11 +429,13 @@ def delete_debt():
 
 
 @app.route("/add_debt", methods=['post'])
+@login_required
 def add_debt():
     return render_template("Canteen/Add_debt.html")
 
 
 @app.route("/insert_debt", methods=['post'])
+@login_required
 def insert_debt():
     amount = request.form['textfield']
     details = request.form['textfield2']
@@ -419,6 +465,7 @@ def insert_debt():
 
 
 @app.route("/verifyUser")
+@login_required
 def verifyUser():
     qry = 'SELECT * FROM `user` JOIN `login` ON `user`.lid = `login`.id WHERE `type`="pending" and user.canteen_id=%s'
     res = selectall2(qry, session['lid'])
@@ -426,11 +473,13 @@ def verifyUser():
 
 
 @app.route("/send_mail")
+@login_required
 def send_mail():
     return render_template("Canteen/mail.html")
 
 
 @app.route("/send_mail2", methods=['post'])
+@login_required
 def send_mail2():
     sub = request.form['textfield']
 
@@ -479,6 +528,7 @@ def send_mail2():
 
 
 @app.route("/accept_user")
+@login_required
 def accept_user():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`="user" WHERE `id`=%s'
@@ -512,6 +562,7 @@ def accept_user():
 
 
 @app.route("/reject_user")
+@login_required
 def reject_user():
     id = request.args.get('id')
     qry = 'UPDATE `login` SET `type`="rejected" WHERE `id`=%s'
@@ -546,6 +597,7 @@ def reject_user():
 
 
 @app.route("/user")
+@login_required
 def user():
     return render_template("User/user_index.html")
 
@@ -596,11 +648,13 @@ def user_register_code():
 
 
 @app.route("/recharge_wallet")
+@login_required
 def recharge_wallet():
     return render_template("User/recharge_wallet.html")
 
 
 @app.route("/recharge_wallet_proceed", methods=['post'])
+@login_required
 def recharge_wallet_proceed():
     amt = request.form['textfield']
     amount = int(amt)*100
@@ -611,6 +665,7 @@ def recharge_wallet_proceed():
 
 
 @app.route('/user_pay_proceed')
+@login_required
 def user_pay_proceed():
     client = razorpay.Client(auth=("rzp_test_edrzdb8Gbx5U5M", "XgwjnFvJQNG6cS7Q13aHKDJj"))
     payment = client.order.create({'amount': session['amt'], 'currency': "INR", 'payment_capture': '1'})
@@ -618,6 +673,7 @@ def user_pay_proceed():
 
 
 @app.route("/user_pay_complete", methods=['post'])
+@login_required
 def user_pay_complete():
 
     if session['curpay'] == "paying_debt":
@@ -647,11 +703,13 @@ def user_pay_complete():
 
 
 @app.route("/view_debt_details")
+@login_required
 def view_debt_details():
     return render_template("User/view_debt_details.html")
 
 
 @app.route("/display_debt_details", methods=['post'])
+@login_required
 def display_debt_details():
     type = request.form['select']
 
@@ -670,6 +728,7 @@ def display_debt_details():
 
 
 @app.route("/pay_debt")
+@login_required
 def pay_debt():
     id = request.args.get('id')
     session['payid'] = id
@@ -686,6 +745,7 @@ def pay_debt():
 
 
 @app.route("/pay_total_amount")
+@login_required
 def pay_total_amount():
     session['curpay'] = "totalpayment"
 
@@ -700,6 +760,7 @@ def pay_total_amount():
 
 
 @app.route("/pay_from_wallet")
+@login_required
 def pay_from_wallet():
     qry = "SELECT * FROM `wallet` WHERE lid=%s"
     res = selectone(qry, session['lid'])
@@ -707,6 +768,7 @@ def pay_from_wallet():
 
 
 @app.route("/pay_wallet_proceed")
+@login_required
 def pay_wallet_proceed():
 
     balance = request.args.get('balance')
@@ -733,11 +795,13 @@ def pay_wallet_proceed():
 
 
 @app.route("/balance_view")
+@login_required
 def balance_view():
     return render_template("User/balance_view.html")
 
 
 @app.route("/balance_code")
+@login_required
 def balance_code():
     qry ="SELECT * FROM `wallet` WHERE lid=%s"
     res = selectone(qry,session['lid'])
@@ -745,11 +809,13 @@ def balance_code():
 
 
 @app.route("/addComplaint")
+@login_required
 def addComplaint():
 
     return render_template("User/addComplaint.html")
 
 @app.route("/add_complaint_code" ,methods=['post'])
+@login_required
 def add_complaint_code():
     id = session['lid']
     complaint = request.form['textfield']
@@ -758,18 +824,18 @@ def add_complaint_code():
     return '''<script>alert("Successfully complaint added");window.location="addComplaint"</script>'''
 
 @app.route("/viewComplaints")
+@login_required
 def viewComplaints():
 
     return render_template("User/viewComplaints.html")
 
 @app.route("/Display_Complaints", methods=['post'])
+@login_required
 def Display_Complaints():
     id = session['lid']
     qry = "SELECT * FROM  `complaint` WHERE user_id =%s"
     res= selectall(qry, id)
     return render_template("User/viewComplaints.html", val=res)
-
-
 
 
 
